@@ -1,33 +1,36 @@
 package donation;
 
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-
+import java.sql.*;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.HttpServlet;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
+import jakarta.servlet.http.*;
 
 @WebServlet("/DonorSignupServlet")
-
 public class DonorSignupServlet extends HttpServlet {
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+
         String name = request.getParameter("name");
         String email = request.getParameter("email");
         String password = request.getParameter("password");
-        String url="jdbc:oracle:thin:@localhost:1521:xe";
-        String username="system";
-        String pwd="root";
+
+        // Validate Gmail (lowercase only)
+        if (!email.matches("[a-z0-9._%+-]+@gmail\\.com")) {
+            request.setAttribute("error", "Only lowercase Gmail addresses are allowed.");
+            request.getRequestDispatcher("donor_login_signup.html").forward(request, response);
+            return;
+        }
+
+        String url = "jdbc:oracle:thin:@localhost:1521:xe";
+        String username = "system";
+        String pwd = "root";
 
         try {
-        	Class.forName("oracle.jdbc.driver.OracleDriver");
-            Connection con =DriverManager.getConnection(url,username,pwd);
-            PreparedStatement checkStmt = con.prepareStatement("select * from donors Where email=?");
+            Class.forName("oracle.jdbc.driver.OracleDriver");
+            Connection con = DriverManager.getConnection(url, username, pwd);
+
+            PreparedStatement checkStmt = con.prepareStatement("SELECT * FROM donors WHERE email = ?");
             checkStmt.setString(1, email);
             ResultSet rs = checkStmt.executeQuery();
             if (rs.next()) {
