@@ -8,43 +8,36 @@
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       background: url("Donation/Eco.jpg") no-repeat center center/cover;
-      margin: 0;
-      padding: 0;
+      margin: 0; padding: 0;
       height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
+      display: flex; justify-content: center; align-items: center;
       position: relative;
     }
 
     .overlay {
       position: absolute;
       top: 0; left: 0;
-      width: 100%;
-      height: 100%;
+      width: 100%; height: 100%;
       background-color: rgba(0, 0, 0, 0.6);
       z-index: 0;
     }
 
     .container {
-      position: relative;
-      z-index: 1;
+      position: relative; z-index: 1;
       background-color: #fff;
       width: 320px;
       padding: 30px 25px;
-      border-radius: 10px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.2);
+      border-radius: 15px;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.25);
       text-align: center;
     }
 
     h2 {
       margin-bottom: 20px;
-      color: #f15a24 ;
+      color: #f15a24;
     }
 
-    input[type="text"],
-    input[type="email"],
-    input[type="password"] {
+    input[type="text"], input[type="email"], input[type="password"] {
       width: 100%;
       padding: 10px;
       margin: 8px 0;
@@ -91,7 +84,12 @@
       cursor: pointer;
     }
 
-    .hidden {
+    .hidden { display: none; }
+
+    .error {
+      color: red;
+      font-size: 13px;
+      margin-top: 5px;
       display: none;
     }
   </style>
@@ -102,7 +100,7 @@
 
   <div class="container">
     <!-- Signup Form -->
-    <form id="signupForm" action="NGOSignupServlet" method="post">
+    <form id="signupForm" action="NGOSignupServlet" method="post" onsubmit="return validateNGOEmail()">
       <h2>NGO Sign Up</h2>
 
       <input type="text" name="name" placeholder="Organization Name" required
@@ -110,14 +108,12 @@
 
       <input type="text" name="location" placeholder="Location" required />
 
-      <input type="email" name="email" placeholder="Email" required
-        pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$"
-        title="Enter a valid email address" />
+      <input type="email" name="email" id="ngoEmail" placeholder="Email" required />
+      <div id="ngoEmailError" class="error">Enter valid Gmail like example@gmail.com (lowercase only)</div>
 
-      <input type="password" name="password" id="signupPassword" placeholder="Password" required
-        pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{8,}"
-        title="At least 8 characters with uppercase, lowercase, and number" />
-
+     <input type="password" name="password" id="signupPassword" placeholder="Password" required
+  pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{8,}"
+  title="At least 8 characters with uppercase, lowercase, and number" />
       <div class="show-password">
         <input type="checkbox" onclick="togglePassword('signupPassword')"> Show Password
       </div>
@@ -141,7 +137,7 @@
 
       <button type="submit">Log In</button>
       <div class="toggle-link">
-        Don't have an account? <a onclick="toggleForm()">Sign up</a>
+        Don’t have an account? <a onclick="toggleForm()">Sign up</a>
       </div>
     </form>
   </div>
@@ -153,8 +149,22 @@
     }
 
     function togglePassword(id) {
-      const passwordInput = document.getElementById(id);
-      passwordInput.type = passwordInput.type === "password" ? "text" : "password";
+      const input = document.getElementById(id);
+      input.type = input.type === "password" ? "text" : "password";
+    }
+
+    function validateNGOEmail() {
+      const emailInput = document.getElementById("ngoEmail");
+      const errorDiv = document.getElementById("ngoEmailError");
+      const emailPattern = /^[a-z0-9._%+-]+@gmail\.com$/;
+
+      if (!emailPattern.test(emailInput.value)) {
+        errorDiv.style.display = "block";
+        return false;
+      }
+
+      errorDiv.style.display = "none";
+      return true;
     }
   </script>
 
